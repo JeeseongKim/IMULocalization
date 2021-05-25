@@ -103,6 +103,7 @@ class IMU_Transformer(nn.Module):
             self.pos_encoder = PositionalEncoding(window_sz, dropout)
 
             self.conv_1 = torch.nn.Conv1d(3, 16, kernel_size=3, padding=1, dilation=1, stride=1)
+            self.cconv_1 = torch.nn.Conv1d(2, 16, kernel_size=3, padding=1, dilation=1, stride=1)
             self.conv_2 = torch.nn.Conv1d(16, 64, kernel_size=3, padding=1, dilation=1, stride=1)
             self.conv_3 = torch.nn.Conv1d(64, 128, kernel_size=3, padding=1, dilation=1, stride=1)
             self.conv_4 = torch.nn.Conv1d(128, hidden_dim, kernel_size=3, padding=1, dilation=1, stride=1)
@@ -112,7 +113,7 @@ class IMU_Transformer(nn.Module):
             mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
             return mask
 
-        def forward(self, src):
+        def forward(self, src, gt):
             # propagate inputs through ResNet-50 up to avg-pool layer
             #src = (1,200,3)
             p_src = src.permute(0, 2, 1)
@@ -121,9 +122,16 @@ class IMU_Transformer(nn.Module):
             src_3 = self.conv_3(src_2)
             src_4 = self.conv_4(src_3)
 
+            p_gt = gt.permute(0, 2, 1)
+            gt_1 = self.cconv_1(p_gt)
+            gt_2 = self.conv_2(gt_1)
+            gt_3 = self.conv_3(gt_2)
+            gt_4 = self.conv_4(gt_3)
+
             enc_inp = src_4.permute(2, 0, 1)
             mask = self.generate_square_subsequent_mask(enc_inp.shape[0]).cuda()
-            tgt = self.query_embed.weight.unsqueeze(1).repeat(1, enc_inp.shape[1], 1)
+            #tgt = self.query_embed.weight.unsqueeze(1).repeat(1, enc_inp.shape[1], 1)
+            tgt = gt_4.permute(2, 0, 1)
 
             pos = self.pos_encoder(src_4.cuda()).permute(2, 0, 1)
             encoder_input = pos + 0.1*enc_inp

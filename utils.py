@@ -32,7 +32,9 @@ class my_dataset(Dataset):
 
         self.window_size = window_size
 
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/IMU/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/IMU/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/IMU/*.txt'))):
+        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_1_5/train/IMU/*.txt'))):
             self.dataset_imu = []
             with open(filename) as f:
                 self.dataset_imu.append(f.readlines())
@@ -60,7 +62,9 @@ class my_dataset(Dataset):
 
         self.imu = torch.cat([tensor_imu_x, tensor_imu_y, tensor_imu_z], dim=1)
 
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/Vicon/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/Vicon/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/Vicon/*.txt'))):
+        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_1_5/train/Vicon/*.txt'))):
             self.dataset_vicon = []
             with open(filename) as f:
                 self.dataset_vicon.append(f.readlines())
@@ -107,7 +111,7 @@ class my_dataset(Dataset):
 
 
 class my_test_dataset(Dataset):
-    def __init__(self, window_size):
+    def __init__(self, imu_file, vicon_file, window_size):
 
         self.imu_x = []
         self.imu_y = []
@@ -124,18 +128,20 @@ class my_test_dataset(Dataset):
 
         self.window_size = window_size
 
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/test/IMU/*.txt'))):
-            self.dataset_imu = []
-            with open(filename) as f:
-                self.dataset_imu.append(f.readlines())
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/test/IMU/*.txt'))):
+        #for filename in imu_file:
+        filename=imu_file
+        self.dataset_imu = []
+        with open(filename) as f:
+            self.dataset_imu.append(f.readlines())
 
-            self.dataset_imu = (self.dataset_imu[0])
+        self.dataset_imu = (self.dataset_imu[0])
 
-            for i in range(len(self.dataset_imu)):
-                self.imu_x.append(self.dataset_imu[i].split('\t')[3])
-                self.imu_y.append(self.dataset_imu[i].split('\t')[4])
-                self.imu_z.append(self.dataset_imu[i].split('\t')[5])
-                self.dataset_filename.append(filename.split('/')[7].split('.')[0])
+        for i in range(len(self.dataset_imu)):
+            self.imu_x.append(self.dataset_imu[i].split('\t')[3])
+            self.imu_y.append(self.dataset_imu[i].split('\t')[4])
+            self.imu_z.append(self.dataset_imu[i].split('\t')[5])
+            self.dataset_filename.append(filename.split('/')[7].split('.')[0])
 
         np_imu_x = np.array(self.imu_x, dtype=np.float32)
         np_imu_y = np.array(self.imu_y, dtype=np.float32)
@@ -151,17 +157,19 @@ class my_test_dataset(Dataset):
 
         self.imu = torch.cat([tensor_imu_x, tensor_imu_y, tensor_imu_z], dim=1)
 
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/test/Vicon/*.txt'))):
-            self.dataset_vicon = []
-            with open(filename) as f:
-                self.dataset_vicon.append(f.readlines())
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/test/Vicon/*.txt'))):
+        #for filename in vicon_file:
+        filename=vicon_file
+        self.dataset_vicon = []
+        with open(filename) as f:
+            self.dataset_vicon.append(f.readlines())
 
-            self.dataset_vicon = (self.dataset_vicon[0])
+        self.dataset_vicon = (self.dataset_vicon[0])
 
-            for i in range(len(self.dataset_vicon)):
-                self.vicon_x.append(self.dataset_vicon[i].split('\t')[5])
-                self.vicon_y.append(self.dataset_vicon[i].split('\t')[6])
-                self.dataset_filename_vicon.append(filename.split('/')[7].split('.')[0])
+        for i in range(len(self.dataset_vicon)):
+            self.vicon_x.append(self.dataset_vicon[i].split('\t')[5])
+            self.vicon_y.append(self.dataset_vicon[i].split('\t')[6])
+            self.dataset_filename_vicon.append(filename.split('/')[7].split('.')[0])
 
         np_vicon_x = np.array(self.vicon_x, dtype=np.float32)
         np_vicon_y = np.array(self.vicon_y, dtype=np.float32)
