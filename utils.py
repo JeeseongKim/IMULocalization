@@ -140,7 +140,8 @@ class my_dataset_gyroz(Dataset):
         self.window_size = window_size
 
         #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/IMU/*.txt'))):
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/IMU/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/IMU/*.txt'))):
+        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_10/train/IMU/*.txt'))):
         #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_1_5/train/IMU/*.txt'))):
             self.dataset_imu = []
             with open(filename) as f:
@@ -172,7 +173,8 @@ class my_dataset_gyroz(Dataset):
         self.imu = torch.cat([tensor_imu_x, tensor_imu_y, tensor_gyro_z], dim=1)
 
         #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data/train/Vicon/*.txt'))):
-        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/Vicon/*.txt'))):
+        #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_5_1/train/Vicon/*.txt'))):
+        for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_10/train/Vicon/*.txt'))):
         #for filename in (sorted(glob.glob('/home/jsk/IMUlocalization/data_1_5/train/Vicon/*.txt'))):
             self.dataset_vicon = []
             with open(filename) as f:
@@ -757,9 +759,9 @@ class my_test_dataset_gyroz(Dataset):
         for i in range(len(self.dataset_imu)):
             self.imu_x.append(self.dataset_imu[i].split('\t')[3])
             self.imu_y.append(self.dataset_imu[i].split('\t')[4])
-            self.gyro_z.append(self.dataset_imu[i].split('\t')[8])
-            self.dataset_filename.append(filename.split('/')[7].split('.')[0])
-            #self.dataset_filename.append(filename.split('/')[6].split('.')[0]) #for parsed data
+            self.gyro_z.append(self.dataset_imu[i].split('\t')[8].split('\n')[0])
+            #self.dataset_filename.append(filename.split('/')[7].split('.')[0])
+            self.dataset_filename.append(filename.split('/')[6].split('.')[0]) #for parsed data
 
         np_imu_x = np.array(self.imu_x, dtype=np.float32)
         np_imu_y = np.array(self.imu_y, dtype=np.float32)
@@ -775,7 +777,7 @@ class my_test_dataset_gyroz(Dataset):
 
         self.imu = torch.cat([tensor_imu_x, tensor_imu_y, tensor_gyro_z], dim=1)
 
-        filename=vicon_file
+        filename = vicon_file
         self.dataset_vicon = []
         with open(filename) as f:
             self.dataset_vicon.append(f.readlines())
@@ -785,8 +787,8 @@ class my_test_dataset_gyroz(Dataset):
         for i in range(len(self.dataset_vicon)):
             self.vicon_x.append(self.dataset_vicon[i].split('\t')[5])
             self.vicon_y.append(self.dataset_vicon[i].split('\t')[6])
-            self.dataset_filename_vicon.append(filename.split('/')[7].split('.')[0])
-            #self.dataset_filename_vicon.append(filename.split('/')[6].split('.')[0])
+            #self.dataset_filename_vicon.append(filename.split('/')[7].split('.')[0])
+            self.dataset_filename_vicon.append(filename.split('/')[6].split('.')[0])
 
         np_vicon_x = np.array(self.vicon_x, dtype=np.float32)
         np_vicon_y = np.array(self.vicon_y, dtype=np.float32)
